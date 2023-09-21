@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0; net7.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>TsukuyoOka.Text.Unicode</RootNamespace>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>Noy Shimotsuki</Authors>
+    <Version>1.0.0</Version>
+    <Description>GraphemeString provides the ability to process .NET strings in units of Unicode grapheme clusters.
+
+* Compare and search strings using grapheme clusters as smallest units.
+* Trim, substring, and split a string without breaking grapheme clusters.
+* Truncate a string to fit a specified grapheme cluster length, code point length, char length, and encoded byte length without breaking grapheme clusters.</Description>
+    <PackageProjectUrl>https://github.com/noy-shimotsuki/GraphemeString</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/noy-shimotsuki/GraphemeString.git</RepositoryUrl>
+    <Title>GraphemeString</Title>
+    <PackageId>TsukuyoOka.GraphemeString</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>grapheme; string; unicode</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Copyright>Copyright © 2023 Noy Shimotsuki</Copyright>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+</Project>
