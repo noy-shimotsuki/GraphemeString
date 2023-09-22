@@ -58,11 +58,11 @@ internal readonly ref struct GraphemeSpan
                 return (-1, -1);
             }
 
-            var index = _indices[charStart + charIndex];
+            var index = _indices[charStart + charIndex] - _indices[0];
             if (stringComparison is not StringComparison.Ordinal and not StringComparison.OrdinalIgnoreCase ||
                 this[index..(index + value.Length)].Equals(value[..], stringComparison))
             {
-                return (index - _indices[0], charStart + charIndex);
+                return (index, charStart + charIndex);
             }
 
             i = index + 1;
@@ -82,11 +82,11 @@ internal readonly ref struct GraphemeSpan
                 return (-1, -1);
             }
 
-            var index = _indices[charIndex];
+            var index = _indices[charIndex] - _indices[0];
             if (stringComparison is not StringComparison.Ordinal and not StringComparison.OrdinalIgnoreCase ||
                 this[index..(index + value.Length)].Equals(value[..], stringComparison))
             {
-                return (index - _indices[0], charIndex);
+                return (index, charIndex);
             }
 
             i -= Length - _indices[charIndex + value.Length - 1] + 1;
@@ -248,10 +248,11 @@ internal readonly ref struct GraphemeSpan
             return Length;
         }
 
+        var valueSpan = this[..];
         var codePointIndex = 0;
         for (var i = 0; i < CharLength; i++)
         {
-            if (i + 1 < CharLength && char.IsHighSurrogate(_valueSpan[i]) && char.IsLowSurrogate(_valueSpan[i + 1]))
+            if (i + 1 < CharLength && char.IsHighSurrogate(valueSpan[i]) && char.IsLowSurrogate(valueSpan[i + 1]))
             {
                 i++;
             }
@@ -268,7 +269,7 @@ internal readonly ref struct GraphemeSpan
 
     public int GetIndex(int charIndex)
     {
-        return (charIndex == CharLength ? Length : _indices[charIndex]) - _indices[0];
+        return charIndex == CharLength ? Length : _indices[charIndex] - _indices[0];
     }
 
     public int GetCharIndex(int index)

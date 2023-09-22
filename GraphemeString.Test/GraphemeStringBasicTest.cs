@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace TsukuyoOka.Text.Unicode;
@@ -64,21 +63,6 @@ public class GraphemeStringBasicTest
         Assert.Equal(expectedValue, new GraphemeString(testValue, start..^(testValue.Length - start - length)).ToString());
     }
 
-    [Fact]
-    public void TestConstructorException()
-    {
-        var testValue = "あいうえお";
-        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, -1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, 0, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, testValue.Length + 1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, 1, testValue.Length));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, 0, testValue.Length + 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, -1..));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, ..-1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, ..(testValue.Length + 1)));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, 1..(testValue.Length + 1)));
-    }
-
     [Theory]
     [InlineData("", 0, 0)]
     [InlineData("あいうえおがぎぐげごぱぴぷぺぽ", 15, 15)]
@@ -96,6 +80,10 @@ public class GraphemeStringBasicTest
         Assert.Equal(expectedLength, str.Length);
         Assert.Equal(expectedCharLength is 0, str.IsEmpty);
         Assert.Equal(expectedLength, testValue.CountGraphemes());
+        var str2 = new GraphemeString("🧑" + testValue + "🧑")[1..^1];
+        Assert.Equal(expectedCharLength, str2.CharLength);
+        Assert.Equal(expectedLength, str2.Length);
+        Assert.Equal(expectedCharLength is 0, str2.IsEmpty);
     }
 
     [Theory]
@@ -121,37 +109,16 @@ public class GraphemeStringBasicTest
         Assert.Equal(expectedGraphemes, str[^rStart..^rEnd].ToString());
         Assert.Equal(expectedGraphemes, str[start..end].ValueSpan.ToString());
         Assert.Equal(expectedGraphemes, str[^rStart..^rEnd].ValueSpan.ToString());
-    }
 
-    [Fact]
-    public void TestExtractSubstringException()
-    {
-        var str = new GraphemeString("The quick brown fox");
-        Assert.Throws<ArgumentOutOfRangeException>(() => str[-1].ToString());
-        Assert.Throws<ArgumentOutOfRangeException>(() => str[str.Length + 1].ToString());
-        Assert.Throws<ArgumentOutOfRangeException>(() => str[-1..2]);
-        Assert.Throws<ArgumentOutOfRangeException>(() => str[0..(str.Length + 1)]);
-        Assert.Throws<ArgumentOutOfRangeException>(() => str[(str.Length + 1)..]);
-    }
-
-    [Fact]
-    public void TestIsEmpty()
-    {
-        Assert.True(GraphemeString.Empty.IsEmpty);
-        Assert.True(new GraphemeString("").IsEmpty);
-        Assert.False(new GraphemeString("\x20").IsEmpty);
-    }
-
-    [Fact]
-    public void TestWhiteSpaces()
-    {
-        Assert.True(GraphemeString.Empty.IsWhiteSpace());
-        Assert.True(new GraphemeString("").IsWhiteSpace());
-        Assert.True(new GraphemeString("\x20").IsWhiteSpace());
-        Assert.True(new GraphemeString("\x20\x20\t").IsWhiteSpace());
-        Assert.True(new GraphemeString("\r\n").IsWhiteSpace());
-        Assert.True(new GraphemeString("\u3000\x20\u3000").IsWhiteSpace());
-        Assert.False(new GraphemeString("\x20\x20a").IsWhiteSpace());
+        var str2 = new GraphemeString("🧑" + testValue + "🧑")[1..^1];
+        Assert.Equal(testValue, str2.ToString());
+        Assert.Equal(testValue, str2.ValueSpan.ToString());
+        Assert.Equal(expectedGrapheme, str2[index].ToString());
+        Assert.Equal(expectedGrapheme, str2[^rIndex].ToString());
+        Assert.Equal(expectedGraphemes, str2[start..end].ToString());
+        Assert.Equal(expectedGraphemes, str2[^rStart..^rEnd].ToString());
+        Assert.Equal(expectedGraphemes, str2[start..end].ValueSpan.ToString());
+        Assert.Equal(expectedGraphemes, str2[^rStart..^rEnd].ValueSpan.ToString());
     }
 
     [Theory]
@@ -167,32 +134,36 @@ public class GraphemeStringBasicTest
     [InlineData("👩\U0001F3FD❤\uFE0F💋👨\U0001F3FB", "👩\U0001F3FD", "❤\uFE0F", "💋", "👨\U0001F3FB")]
     public void TestEnumeration(string testValue, params string[] expected)
     {
-        var str = new GraphemeString(testValue);
+        foreach (var str in new[] { new GraphemeString(testValue), new GraphemeString("🧑" + testValue + "🧑")[1..^1] })
         {
-            var i = 0;
-            foreach (var g in str)
             {
-                Assert.Equal(expected[i++], g.ToString());
+                var i = 0;
+                foreach (var g in str)
+                {
+                    Assert.Equal(expected[i++], g.ToString());
+                }
             }
-        }
-        {
-            var i = 0;
-            var enumerator = str.GetEnumerator();
-            Assert.Throws<InvalidOperationException>(() => enumerator.Current.ToString());
-            while (enumerator.MoveNext())
             {
-                Assert.Equal(expected[i++], enumerator.Current.ToString());
-            }
-            Assert.Throws<InvalidOperationException>(() => enumerator.Current.ToString());
+                var i = 0;
+                var enumerator = str.GetEnumerator();
+                Assert.Throws<InvalidOperationException>(() => enumerator.Current.ToString());
+                while (enumerator.MoveNext())
+                {
+                    Assert.Equal(expected[i++], enumerator.Current.ToString());
+                }
 
-            i = 0;
-            enumerator.Reset();
-            Assert.Throws<InvalidOperationException>(() => enumerator.Current.ToString());
-            while (enumerator.MoveNext())
-            {
-                Assert.Equal(expected[i++], enumerator.Current.ToString());
+                Assert.Throws<InvalidOperationException>(() => enumerator.Current.ToString());
+
+                i = 0;
+                enumerator.Reset();
+                Assert.Throws<InvalidOperationException>(() => enumerator.Current.ToString());
+                while (enumerator.MoveNext())
+                {
+                    Assert.Equal(expected[i++], enumerator.Current.ToString());
+                }
+
+                Assert.Throws<InvalidOperationException>(() => enumerator.Current.ToString());
             }
-            Assert.Throws<InvalidOperationException>(() => enumerator.Current.ToString());
         }
     }
 
@@ -216,5 +187,53 @@ public class GraphemeStringBasicTest
                 };
             }
         }
+    }
+
+    [Fact]
+    public void TestConstructorException()
+    {
+        var testValue = "あいうえお";
+        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, 0, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, testValue.Length + 1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, 1, testValue.Length));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, 0, testValue.Length + 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, -1..));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, ..-1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, ..(testValue.Length + 1)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new GraphemeString(testValue, 1..(testValue.Length + 1)));
+    }
+
+    [Fact]
+    public void TestExtractSubstringException()
+    {
+        var str = new GraphemeString("The quick brown fox");
+        Assert.Throws<ArgumentOutOfRangeException>(() => str[-1].ToString());
+        Assert.Throws<ArgumentOutOfRangeException>(() => str[str.Length + 1].ToString());
+        Assert.Throws<ArgumentOutOfRangeException>(() => str[-1..2]);
+        Assert.Throws<ArgumentOutOfRangeException>(() => str[..(str.Length + 1)]);
+        Assert.Throws<ArgumentOutOfRangeException>(() => str[(str.Length + 1)..]);
+    }
+
+    [Fact]
+    public void TestIsEmpty()
+    {
+        Assert.True(GraphemeString.Empty.IsEmpty);
+        Assert.True(new GraphemeString("").IsEmpty);
+        Assert.False(new GraphemeString("\x20").IsEmpty);
+        Assert.True(new GraphemeString("123")[1..1].IsEmpty);
+    }
+
+    [Fact]
+    public void TestWhiteSpaces()
+    {
+        Assert.True(GraphemeString.Empty.IsWhiteSpace());
+        Assert.True(new GraphemeString("").IsWhiteSpace());
+        Assert.True(new GraphemeString("\x20").IsWhiteSpace());
+        Assert.True(new GraphemeString("\x20\x20\t").IsWhiteSpace());
+        Assert.True(new GraphemeString("\r\n").IsWhiteSpace());
+        Assert.True(new GraphemeString("\u3000\x20\u3000").IsWhiteSpace());
+        Assert.False(new GraphemeString("\x20\u0020a").IsWhiteSpace());
+        Assert.True(new GraphemeString("abc def")[3..^3].IsWhiteSpace());
     }
 }

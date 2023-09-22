@@ -9,8 +9,8 @@ public class GraphemeStringOperatorsTest
         Assert.True(new GraphemeString("hoge") == "hoge");
         Assert.True("hoge" == new GraphemeString("hoge"));
 
-        Assert.True(new GraphemeString("hoge") == new GraphemeString("hogehoge", ..4));
-        Assert.True(new GraphemeString("hogehoge", ..4) == "hoge");
+        Assert.True(new GraphemeString("fuga") == new GraphemeString("hogefugapiyo", 4..8));
+        Assert.True(new GraphemeString("hogefugapiyo", 4..8) == "fuga");
         Assert.False(new GraphemeString("hoge") == new GraphemeString("Hoge"));
 
         Assert.True((GraphemeString?)null == (GraphemeString?)null);
@@ -29,8 +29,8 @@ public class GraphemeStringOperatorsTest
         Assert.False(new GraphemeString("hoge") != "hoge");
         Assert.False("hoge" != new GraphemeString("hoge"));
 
-        Assert.False(new GraphemeString("hoge") != new GraphemeString("hogehoge", ..4));
-        Assert.False(new GraphemeString("hogehoge", ..4) != "hoge");
+        Assert.False(new GraphemeString("fuga") != new GraphemeString("hogefugapiyo", 4..8));
+        Assert.False(new GraphemeString("hogefugapiyo", 4..8) != "fuga");
         Assert.True(new GraphemeString("hoge") != new GraphemeString("Hoge"));
 
         Assert.False((GraphemeString?)null != (GraphemeString?)null);

@@ -64,6 +64,9 @@ public class GraphemeStringConversionsTest
         var str = new GraphemeString(testValue);
         Assert.Throws<ArgumentException>(() => str.Replace("", newValue, StringComparison.OrdinalIgnoreCase));
         Assert.Equal(expectedValue, str.Replace(oldValue, newValue, StringComparison.Ordinal).ToString());
+        var str2 = new GraphemeString("🧑" + testValue + "🧑")[1..^1];
+        Assert.Throws<ArgumentException>(() => str2.Replace("", newValue, StringComparison.OrdinalIgnoreCase));
+        Assert.Equal(expectedValue, str2.Replace(oldValue, newValue, StringComparison.Ordinal).ToString());
     }
 
     [Theory]
@@ -110,16 +113,22 @@ public class GraphemeStringConversionsTest
     public void TestSplit(string testValue, string testSeparator, StringComparison stringComparison, int count, StringSplitOptions stringSplitOptions, params string[] expected)
     {
         var str = new GraphemeString(testValue);
+        var str2 = new GraphemeString("🧑" + testValue + "🧑")[1..^1];
         if (count < 0)
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => str.Split(testSeparator, stringComparison, count, stringSplitOptions));
             Assert.Equal(expected, str.Split(testSeparator, stringComparison, stringSplitOptions).Select(x => x.ToString()));
             Assert.Equal(expected, str.Split(testSeparator, stringComparison, stringSplitOptions).Select(x => x.ValueSpan.ToString()));
+            Assert.Throws<ArgumentOutOfRangeException>(() => str2.Split(testSeparator, stringComparison, count, stringSplitOptions));
+            Assert.Equal(expected, str2.Split(testSeparator, stringComparison, stringSplitOptions).Select(x => x.ToString()));
+            Assert.Equal(expected, str2.Split(testSeparator, stringComparison, stringSplitOptions).Select(x => x.ValueSpan.ToString()));
         }
         else
         {
             Assert.Equal(expected, str.Split(testSeparator, stringComparison, count, stringSplitOptions).Select(x => x.ToString()));
             Assert.Equal(expected, str.Split(testSeparator, stringComparison, count, stringSplitOptions).Select(x => x.ValueSpan.ToString()));
+            Assert.Equal(expected, str2.Split(testSeparator, stringComparison, count, stringSplitOptions).Select(x => x.ToString()));
+            Assert.Equal(expected, str2.Split(testSeparator, stringComparison, count, stringSplitOptions).Select(x => x.ValueSpan.ToString()));
         }
     }
 
@@ -139,6 +148,7 @@ public class GraphemeStringConversionsTest
     public void TestTrim(string testValue, string trimValue, string expected)
     {
         Assert.Equal(expected, new GraphemeString(testValue).Trim(trimValue, StringComparison.Ordinal).ToString());
+        Assert.Equal(expected, new GraphemeString("🧑" + testValue + "🧑")[1..^1].Trim(trimValue, StringComparison.Ordinal).ToString());
     }
 
     [Theory]
@@ -157,6 +167,7 @@ public class GraphemeStringConversionsTest
     public void TestTrimEnd(string testValue, string trimValue, string expected)
     {
         Assert.Equal(expected, new GraphemeString(testValue).TrimEnd(trimValue, StringComparison.Ordinal).ToString());
+        Assert.Equal(expected, new GraphemeString("🧑" + testValue + "🧑")[1..^1].TrimEnd(trimValue, StringComparison.Ordinal).ToString());
     }
 
     [Theory]
@@ -169,6 +180,7 @@ public class GraphemeStringConversionsTest
     public void TestTrimEndWhitespaces(string testValue, string expected)
     {
         Assert.Equal(expected, new GraphemeString(testValue).TrimEnd().ToString());
+        Assert.Equal(expected, new GraphemeString("🧑" + testValue + "🧑")[1..^1].TrimEnd().ToString());
     }
 
     [Theory]
@@ -187,6 +199,7 @@ public class GraphemeStringConversionsTest
     public void TestTrimStart(string testValue, string trimValue, string expected)
     {
         Assert.Equal(expected, new GraphemeString(testValue).TrimStart(trimValue, StringComparison.Ordinal).ToString());
+        Assert.Equal(expected, new GraphemeString("🧑" + testValue + "🧑")[1..^1].TrimStart(trimValue, StringComparison.Ordinal).ToString());
     }
 
     [Theory]
@@ -199,6 +212,7 @@ public class GraphemeStringConversionsTest
     public void TestTrimStartWhitespaces(string testValue, string expected)
     {
         Assert.Equal(expected, new GraphemeString(testValue).TrimStart().ToString());
+        Assert.Equal(expected, new GraphemeString("🧑" + testValue + "🧑")[1..^1].TrimStart().ToString());
     }
 
     [Theory]
@@ -212,6 +226,7 @@ public class GraphemeStringConversionsTest
     public void TestTrimWhitespaces(string testValue, string expected)
     {
         Assert.Equal(expected, new GraphemeString(testValue).Trim().ToString());
+        Assert.Equal(expected, new GraphemeString("🧑" + testValue + "🧑")[1..^1].Trim().ToString());
     }
 
     [Theory]
@@ -219,6 +234,7 @@ public class GraphemeStringConversionsTest
     public void TestTruncateByByteLength(string testValue, Encoding encoding)
     {
         var str = new GraphemeString(testValue);
+        var str2 = new GraphemeString("🧑" + testValue + "🧑")[1..^1];
         Assert.Throws<ArgumentOutOfRangeException>(() => str.TruncateByByteLength(encoding, -1));
         Assert.Throws<ArgumentOutOfRangeException>(() => testValue.TruncateByByteLength(encoding, -1));
         for (var i = 0; i < str.CharLength * 5; i++)
@@ -236,6 +252,8 @@ public class GraphemeStringConversionsTest
             {
                 AssertUtil.GreaterThan(i, encoding.GetBytes(str[..(result2.CountGraphemes() + 1)].ToString()).Length);
             }
+
+            Assert.True(result == str2.TruncateByByteLength(encoding, i));
         }
     }
 
@@ -244,6 +262,7 @@ public class GraphemeStringConversionsTest
     public void TestTruncateByCharLength(string testValue)
     {
         var str = new GraphemeString(testValue);
+        var str2 = new GraphemeString("🧑" + testValue + "🧑")[1..^1];
         Assert.Throws<ArgumentOutOfRangeException>(() => str.TruncateByCharLength(-1));
         Assert.Throws<ArgumentOutOfRangeException>(() => testValue.TruncateByCharLength(-1));
         for (var i = 0; i < str.CharLength * 2; i++)
@@ -261,6 +280,8 @@ public class GraphemeStringConversionsTest
             {
                 AssertUtil.GreaterThan(i, str[..(result2.CountGraphemes() + 1)].ValueSpan.Length);
             }
+
+            Assert.True(result == str2.TruncateByCharLength(i));
         }
     }
 
@@ -269,6 +290,7 @@ public class GraphemeStringConversionsTest
     public void TestTruncateByCodePointLength(string testValue)
     {
         var str = new GraphemeString(testValue);
+        var str2 = new GraphemeString("🧑" + testValue + "🧑")[1..^1];
         Assert.Throws<ArgumentOutOfRangeException>(() => str.TruncateByCodePointLength(-1));
         Assert.Throws<ArgumentOutOfRangeException>(() => testValue.TruncateByCodePointLength(-1));
         for (var i = 0; i < str.CharLength * 3; i++)
@@ -286,6 +308,8 @@ public class GraphemeStringConversionsTest
             {
                 AssertUtil.GreaterThan(i, str[..(result2.CountGraphemes() + 1)].ToString().EnumerateRunes().Count());
             }
+
+            Assert.True(result == str2.TruncateByCodePointLength(i));
         }
     }
 
@@ -294,6 +318,7 @@ public class GraphemeStringConversionsTest
     public void TestTruncateByGraphemeLength(string testValue)
     {
         var str = new GraphemeString(testValue);
+        var str2 = new GraphemeString("🧑" + testValue + "🧑")[1..^1];
         Assert.Throws<ArgumentOutOfRangeException>(() => str.TruncateByGraphemeLength(-1));
         Assert.Throws<ArgumentOutOfRangeException>(() => testValue.TruncateByGraphemeLength(-1));
         for (var i = 0; i < str.CharLength * 3; i++)
@@ -311,6 +336,8 @@ public class GraphemeStringConversionsTest
             {
                 AssertUtil.GreaterThan(i, str[..(result2.CountGraphemes() + 1)].Length);
             }
+
+            Assert.True(result == str2.TruncateByGraphemeLength(i));
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.Json;
 using TsukuyoOka.Text.Unicode.Utils;
 
@@ -63,6 +62,9 @@ public class GraphemeStringComparisonsTest
         var str = new GraphemeString(testString);
         Assert.Equal(expected, str.EndsWith(value, stringComparison));
         Assert.Equal(expected, str.EndsWith(new GraphemeString(value), stringComparison));
+        var str2 = new GraphemeString("🧑" + testString + "🧑")[1..^1];
+        Assert.Equal(expected, str2.EndsWith(value, stringComparison));
+        Assert.Equal(expected, str2.EndsWith(new GraphemeString(value + "🧑")[..^1], stringComparison));
     }
 
     [Theory]
@@ -98,6 +100,9 @@ public class GraphemeStringComparisonsTest
         var str = new GraphemeString(testString);
         Assert.Equal(expected, str.IndexOf(value, stringComparison));
         Assert.Equal(expected, str.IndexOf(new GraphemeString(value), stringComparison));
+        var str2 = new GraphemeString("🧑" + testString + "🧑")[1..^1];
+        Assert.Equal(expected, str2.IndexOf(value, stringComparison));
+        Assert.Equal(expected, str2.IndexOf(new GraphemeString("🧑" + value + "🧑")[1..^1], stringComparison));
     }
 
     [Theory]
@@ -133,6 +138,9 @@ public class GraphemeStringComparisonsTest
         var str = new GraphemeString(testString);
         Assert.Equal(expected, str.LastIndexOf(value, stringComparison));
         Assert.Equal(expected, str.LastIndexOf(new GraphemeString(value), stringComparison));
+        var str2 = new GraphemeString("🧑" + testString + "🧑")[1..^1];
+        Assert.Equal(expected, str2.LastIndexOf(value, stringComparison));
+        Assert.Equal(expected, str2.LastIndexOf(new GraphemeString("🧑" + value + "🧑")[1..^1], stringComparison));
     }
 
     [Theory]
@@ -166,6 +174,9 @@ public class GraphemeStringComparisonsTest
         var str = new GraphemeString(testString);
         Assert.Equal(expected, str.StartsWith(value, stringComparison));
         Assert.Equal(expected, str.StartsWith(new GraphemeString(value), stringComparison));
+        var str2 = new GraphemeString("🧑" + testString + "🧑")[1..^1];
+        Assert.Equal(expected, str2.StartsWith(value, stringComparison));
+        Assert.Equal(expected, str2.StartsWith(new GraphemeString("🧑" + value + "🧑")[1..^1], stringComparison));
     }
 
     [Theory]
@@ -201,6 +212,9 @@ public class GraphemeStringComparisonsTest
         var str = new GraphemeString(testString);
         Assert.Equal(expected, str.CharIndexOf(value, stringComparison));
         Assert.Equal(expected, str.CharIndexOf(new GraphemeString(value), stringComparison));
+        var str2 = new GraphemeString("🧑" + testString + "🧑")[1..^1];
+        Assert.Equal(expected, str2.CharIndexOf(value, stringComparison));
+        Assert.Equal(expected, str2.CharIndexOf(new GraphemeString("🧑" + value + "🧑")[1..^1], stringComparison));
     }
 
     [Theory]
@@ -233,6 +247,9 @@ public class GraphemeStringComparisonsTest
         var str = new GraphemeString(testString);
         Assert.Equal(expected, str.LastCharIndexOf(value, stringComparison));
         Assert.Equal(expected, str.LastCharIndexOf(new GraphemeString(value), stringComparison));
+        var str2 = new GraphemeString("🧑" + testString + "🧑")[1..^1];
+        Assert.Equal(expected, str2.LastCharIndexOf(value, stringComparison));
+        Assert.Equal(expected, str2.LastCharIndexOf(new GraphemeString("🧑" + value + "🧑")[1..^1], stringComparison));
     }
 
     [Theory]
@@ -268,6 +285,9 @@ public class GraphemeStringComparisonsTest
         var str = new GraphemeString(testString);
         Assert.Equal(expected, str.Contains(value, stringComparison));
         Assert.Equal(expected, str.Contains(new GraphemeString(value), stringComparison));
+        var str2 = new GraphemeString("🧑" + testString + "🧑")[1..^1];
+        Assert.Equal(expected, str2.Contains(value, stringComparison));
+        Assert.Equal(expected, str2.Contains(new GraphemeString("🧑" + value + "🧑")[1..^1], stringComparison));
     }
 
     [Theory]
@@ -286,24 +306,9 @@ public class GraphemeStringComparisonsTest
         var str = new GraphemeString(testString);
         Assert.Equal(expected, str.Equals(value, stringComparison));
         Assert.Equal(expected, str.Equals(new GraphemeString(value), stringComparison));
-    }
-
-    [Fact]
-    public void TestOverriddenEquals()
-    {
-        var str = new GraphemeString("test");
-        Assert.False(str.Equals(null));
-        Assert.False(str.Equals("test"));
-        Assert.True(str.Equals(new GraphemeString("test")));
-    }
-
-    [Fact]
-    public void TestGetHashCode()
-    {
-        Assert.True(new GraphemeString("test").GetHashCode() == new GraphemeString("test").GetHashCode());
-        Assert.False(new GraphemeString("test").GetHashCode() == new GraphemeString("test2").GetHashCode());
-        Assert.True(new GraphemeString("testtesttesttesttest").GetHashCode() == new GraphemeString("testtesttesttesttest").GetHashCode());
-        Assert.False(new GraphemeString("testtesttesttesttest").GetHashCode() == new GraphemeString("testtesttesttesttest2").GetHashCode());
+        var str2 = new GraphemeString("🧑" + testString + "🧑")[1..^1];
+        Assert.Equal(expected, str2.Equals(value, stringComparison));
+        Assert.Equal(expected, str2.Equals(new GraphemeString("🧑" + value + "🧑")[1..^1], stringComparison));
     }
 
     [Theory]
@@ -320,19 +325,32 @@ public class GraphemeStringComparisonsTest
     public void TestCompareTo(string testString, string value, StringComparison stringComparison, int expected)
     {
         var str = new GraphemeString(testString);
+        var str2 = new GraphemeString("🧑" + testString + "🧑")[1..^1];
         switch (expected)
         {
             case 0:
                 Assert.Equal(0, str.CompareTo(value, stringComparison));
                 Assert.Equal(0, str.CompareTo(new GraphemeString(value), stringComparison));
+                Assert.Equal(0, str.CompareTo(new GraphemeString("🧑" + value + "🧑")[1..^1], stringComparison));
+                Assert.Equal(0, str2.CompareTo(value, stringComparison));
+                Assert.Equal(0, str2.CompareTo(new GraphemeString(value), stringComparison));
+                Assert.Equal(0, str2.CompareTo(new GraphemeString("🧑" + value + "🧑")[1..^1], stringComparison));
                 break;
             case < 0:
                 AssertUtil.LowerThan(0, str.CompareTo(value, stringComparison));
                 AssertUtil.LowerThan(0, str.CompareTo(new GraphemeString(value), stringComparison));
+                AssertUtil.LowerThan(0, str.CompareTo(new GraphemeString("🧑" + value + "🧑")[1..^1], stringComparison));
+                AssertUtil.LowerThan(0, str2.CompareTo(value, stringComparison));
+                AssertUtil.LowerThan(0, str2.CompareTo(new GraphemeString(value), stringComparison));
+                AssertUtil.LowerThan(0, str2.CompareTo(new GraphemeString("🧑" + value + "🧑")[1..^1], stringComparison));
                 break;
             default:
                 AssertUtil.GreaterThan(0, str.CompareTo(value, stringComparison));
                 AssertUtil.GreaterThan(0, str.CompareTo(new GraphemeString(value), stringComparison));
+                AssertUtil.GreaterThan(0, str.CompareTo(new GraphemeString("🧑" + value + "🧑")[1..^1], stringComparison));
+                AssertUtil.GreaterThan(0, str2.CompareTo(value, stringComparison));
+                AssertUtil.GreaterThan(0, str2.CompareTo(new GraphemeString(value), stringComparison));
+                AssertUtil.GreaterThan(0, str2.CompareTo(new GraphemeString("🧑" + value + "🧑")[1..^1], stringComparison));
                 break;
         }
     }
@@ -344,17 +362,52 @@ public class GraphemeStringComparisonsTest
     public void TestIComparableCompareTo(string testString, string value, int expected)
     {
         var str = new GraphemeString(testString);
+        var str2 = new GraphemeString("🧑" + testString + "🧑")[1..^1];
         switch (expected)
         {
             case 0:
                 Assert.Equal(0, ((IComparable<GraphemeString>)str).CompareTo(new GraphemeString(value)));
+                Assert.Equal(0, ((IComparable<GraphemeString>)str).CompareTo(new GraphemeString("🧑" + value + "🧑")[1..^1]));
+                Assert.Equal(0, ((IComparable<GraphemeString>)str2).CompareTo(new GraphemeString(value)));
+                Assert.Equal(0, ((IComparable<GraphemeString>)str2).CompareTo(new GraphemeString("🧑" + value + "🧑")[1..^1]));
                 break;
             case < 0:
                 AssertUtil.LowerThan(0, ((IComparable<GraphemeString>)str).CompareTo(new GraphemeString(value)));
+                AssertUtil.LowerThan(0, ((IComparable<GraphemeString>)str).CompareTo(new GraphemeString("🧑" + value + "🧑")[1..^1]));
+                AssertUtil.LowerThan(0, ((IComparable<GraphemeString>)str2).CompareTo(new GraphemeString(value)));
+                AssertUtil.LowerThan(0, ((IComparable<GraphemeString>)str2).CompareTo(new GraphemeString("🧑" + value + "🧑")[1..^1]));
                 break;
             default:
                 AssertUtil.GreaterThan(0, ((IComparable<GraphemeString>)str).CompareTo(new GraphemeString(value)));
+                AssertUtil.GreaterThan(0, ((IComparable<GraphemeString>)str).CompareTo(new GraphemeString("🧑" + value + "🧑")[1..^1]));
+                AssertUtil.GreaterThan(0, ((IComparable<GraphemeString>)str2).CompareTo(new GraphemeString(value)));
+                AssertUtil.GreaterThan(0, ((IComparable<GraphemeString>)str2).CompareTo(new GraphemeString("🧑" + value + "🧑")[1..^1]));
                 break;
         }
+    }
+
+    [Fact]
+    public void TestGetHashCode()
+    {
+        Assert.True(new GraphemeString("test").GetHashCode() == new GraphemeString("test").GetHashCode());
+        Assert.False(new GraphemeString("test").GetHashCode() == new GraphemeString("test2").GetHashCode());
+        Assert.True(new GraphemeString("testtesttesttesttest").GetHashCode() == new GraphemeString("testtesttesttesttest").GetHashCode());
+        Assert.False(new GraphemeString("testtesttesttesttest").GetHashCode() == new GraphemeString("testtesttesttesttest2").GetHashCode());
+        Assert.True(new GraphemeString("🧑test🧑")[1..^1].GetHashCode() == new GraphemeString("test").GetHashCode());
+    }
+
+    [Fact]
+    public void TestOverriddenEquals()
+    {
+        var str = new GraphemeString("test");
+        Assert.False(str.Equals(null));
+        Assert.False(str.Equals("test"));
+        Assert.True(str.Equals(new GraphemeString("test")));
+        Assert.True(str.Equals(new GraphemeString("🧑test🧑")[1..^1]));
+        var str2 = new GraphemeString("🧑test🧑")[1..^1];
+        Assert.False(str2.Equals(null));
+        Assert.False(str2.Equals("test"));
+        Assert.True(str2.Equals(new GraphemeString("test")));
+        Assert.True(str2.Equals(new GraphemeString("🧑test🧑")[1..^1]));
     }
 }
