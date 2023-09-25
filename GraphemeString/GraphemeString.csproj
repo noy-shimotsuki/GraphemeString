@@ -8,7 +8,7 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Noy Shimotsuki</Authors>
-    <Version>1.0.1</Version>
+    <Version>1.1.0</Version>
     <Description>GraphemeString provides the ability to process .NET strings in units of Unicode grapheme clusters.
 
 * Compare and search strings using grapheme clusters as smallest units.

@@ -87,6 +87,48 @@ public class GraphemeStringBasicTest
     }
 
     [Theory]
+    [InlineData("", 0, 0)]
+    [InlineData("あいうえおがぎぐげごぱぴぷぺぽ", 3, 3)]
+    [InlineData("あいうえおか\u3099き\u3099く\u3099け\u3099こ\u3099は\u309aひ\u309aふ\u309aへ\u309aほ\u309a", 8, 11)]
+    [InlineData("👨\u200d👩\u200d👧\u200d👦", 1, 11)]
+    [InlineData("👨👩👧👦", 2, 4)]
+    [InlineData("🇺🇸🇰🇷🇺🇸🇰🇷", 2, 8)]
+    public void TestGetCharIndexByIndex(string testValue, int index, int charIndex)
+    {
+        var str = new GraphemeString(testValue);
+        Assert.Equal(charIndex, str.GetCharIndexByIndex(index));
+        Assert.Equal(str.CharLength, str.GetCharIndexByIndex(str.Length));
+        Assert.Throws<ArgumentOutOfRangeException>(() => str.GetCharIndexByIndex(-1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => str.GetCharIndexByIndex(str.Length + 1));
+        var str2 = new GraphemeString("🧑" + testValue + "🧑")[1..^1];
+        Assert.Equal(charIndex, str2.GetCharIndexByIndex(index));
+        Assert.Equal(str2.CharLength, str2.GetCharIndexByIndex(str2.Length));
+        Assert.Throws<ArgumentOutOfRangeException>(() => str2.GetCharIndexByIndex(-1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => str2.GetCharIndexByIndex(str2.Length + 1));
+    }
+
+    [Theory]
+    [InlineData("", 0, 0)]
+    [InlineData("あいうえおがぎぐげごぱぴぷぺぽ", 3, 3)]
+    [InlineData("あいうえおか\u3099き\u3099く\u3099け\u3099こ\u3099は\u309aひ\u309aふ\u309aへ\u309aほ\u309a", 11, 8)]
+    [InlineData("👨\u200d👩\u200d👧\u200d👦", 5, 0)]
+    [InlineData("👨👩👧👦", 5, 2)]
+    [InlineData("🇺🇸🇰🇷🇺🇸🇰🇷", 7, 1)]
+    public void TestGetIndexByCharIndex(string testValue, int charIndex, int index)
+    {
+        var str = new GraphemeString(testValue);
+        Assert.Equal(index, str.GetIndexByCharIndex(charIndex));
+        Assert.Equal(str.Length, str.GetIndexByCharIndex(str.CharLength));
+        Assert.Throws<ArgumentOutOfRangeException>(() => str.GetIndexByCharIndex(-1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => str.GetIndexByCharIndex(str.CharLength + 1));
+        var str2 = new GraphemeString("🧑" + testValue + "🧑")[1..^1];
+        Assert.Equal(index, str2.GetIndexByCharIndex(charIndex));
+        Assert.Equal(str2.Length, str2.GetIndexByCharIndex(str2.CharLength));
+        Assert.Throws<ArgumentOutOfRangeException>(() => str2.GetIndexByCharIndex(-1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => str2.GetIndexByCharIndex(str2.CharLength + 1));
+    }
+
+    [Theory]
     [InlineData("あいうえおがぎぐげごぱぴぷぺぽ", 5, 10, "が", 7, 10, 8, 5, "ぐげご")]
     [InlineData("あいうえおか\u3099き\u3099く\u3099け\u3099こ\u3099は\u309aひ\u309aふ\u309aへ\u309aほ\u309a",
         5, 10, "か\u3099", 7, 10, 8, 5, "く\u3099け\u3099こ\u3099")]

@@ -391,8 +391,8 @@ public class GraphemeStringComparisonsTest
     {
         Assert.True(new GraphemeString("test").GetHashCode() == new GraphemeString("test").GetHashCode());
         Assert.False(new GraphemeString("test").GetHashCode() == new GraphemeString("test2").GetHashCode());
-        Assert.True(new GraphemeString("testtesttesttesttest").GetHashCode() == new GraphemeString("testtesttesttesttest").GetHashCode());
-        Assert.False(new GraphemeString("testtesttesttesttest").GetHashCode() == new GraphemeString("testtesttesttesttest2").GetHashCode());
+        Assert.True(new GraphemeString("testtesttesttesttesttesttesttesttesttest").GetHashCode() == new GraphemeString("testtesttesttesttesttesttesttesttesttest").GetHashCode());
+        Assert.False(new GraphemeString("testtesttesttesttesttesttesttesttesttest").GetHashCode() == new GraphemeString("testtesttesttesttesttesttesttesttesttest2").GetHashCode());
         Assert.True(new GraphemeString("🧑test🧑")[1..^1].GetHashCode() == new GraphemeString("test").GetHashCode());
     }
 

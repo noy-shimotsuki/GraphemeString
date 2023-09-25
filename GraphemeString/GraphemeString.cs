@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 using TsukuyoOka.Text.Unicode.Internals;
 
 namespace TsukuyoOka.Text.Unicode;
@@ -147,12 +148,52 @@ public sealed partial class GraphemeString
     }
 
     /// <summary>
+    /// Returns the index of the first char in the specified grapheme cluster.
+    /// If a grapheme cluster length is specified, return the char length.
+    /// </summary>
+    /// <param name="index">The grapheme index.</param>
+    /// <returns>The zero-based index position of the first char in the specified grapheme cluster.</returns>
+    public int GetCharIndexByIndex(int index)
+    {
+        if (index == 0)
+        {
+            return 0;
+        }
+        if (index < 0 || index > Length)
+        {
+            ThrowHelper.ThrowArgumentOutOfRangeException(nameof(index));
+        }
+
+        return _core.GetGraphemeSpan(_start, Length).GetCharIndex(index);
+    }
+
+    /// <summary>
     /// Retrieves an object that can iterate through the individual graphemes in this instance.
     /// </summary>
     /// <returns></returns>
     public GraphemeEnumerator GetEnumerator()
     {
         return new GraphemeEnumerator(this);
+    }
+
+    /// <summary>
+    /// Returns the index of the grapheme cluster containing the specified char.
+    /// If a char length is specified, return the grapheme cluster length.
+    /// </summary>
+    /// <param name="charIndex">The char index.</param>
+    /// <returns>The zero-based index position of the grapheme cluster containing the specified char.</returns>
+    public int GetIndexByCharIndex(int charIndex)
+    {
+        if (charIndex == 0)
+        {
+            return 0;
+        }
+        if (charIndex < 0 || charIndex > CharLength)
+        {
+            ThrowHelper.ThrowArgumentOutOfRangeException(nameof(charIndex));
+        }
+
+        return _core.GetGraphemeSpan(_start, Length).GetIndex(charIndex);
     }
 
     /// <summary>
