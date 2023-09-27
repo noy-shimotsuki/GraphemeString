@@ -52,7 +52,7 @@ public partial class GraphemeString
             var i = 0;
             while ((next = span.IndexOf(oldValueGraphemeSpan, startIndex, stringComparison).Index) >= 0)
             {
-                positions[i++] = span.GetCharIndex(next - startIndex);
+                positions[i++] = span.GetCharIndex(next) - span.GetCharIndex(startIndex);
                 startIndex = next + oldValueGraphemeSpan.Length;
             }
 

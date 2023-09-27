@@ -59,6 +59,10 @@ public class GraphemeStringConversionsTest
     [InlineData("The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog.", "T", "t",
         "the quick brown fox jumps over the lazy dog. the quick brown fox jumps over the lazy dog.")]
     [InlineData("The quick brown fox", "The quick brown fox", "", "")]
+    [InlineData("a\r\nb\rc\nd\ne\rf\r\ng", "\n", "-", "a\r\nb\rc-d-e\rf\r\ng")]
+    [InlineData("a\r\nb\rc\nd\ne\rf\r\ng", "\r", "-", "a\r\nb-c\nd\ne-f\r\ng")]
+    [InlineData("🐭ne🐮ushi🐯tora🐭ne🐮ushi🐯tora", "🐮", "丑", "🐭ne丑ushi🐯tora🐭ne丑ushi🐯tora")]
+    [InlineData("👨👨👨\u200D👩\u200D👧\u200D👧👨👨", "👨", "👩", "👩👩👨\u200D👩\u200D👧\u200D👧👩👩")]
     public void TestReplace(string testValue, string oldValue, string newValue, string expectedValue)
     {
         var str = new GraphemeString(testValue);
